@@ -23,13 +23,13 @@ h2{font:700 24px/1.2 "Noto Serif SC",serif;margin:0 0 14px}
 .legend{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0 14px}
 .chip{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--ink);font:500 14px "Noto Sans SC",sans-serif;cursor:pointer}
 .chip i{width:14px;height:14px;border-radius:4px;flex:none}
-.chip[aria-pressed=true]{background:light-dark(#ebe7de,#26303c)}
+.chip:hover{background:light-dark(#f3f0ea,#1f2833)}.chip[aria-pressed=true]{background:light-dark(#e3ded3,#2c3846);font-weight:700}
 .chip{outline:none}.chip:focus-visible{background:light-dark(#ebe7de,#26303c)}.map path{outline:none}
 .mapwrap{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:18px;align-items:start}
 .map{background:var(--sea);border-radius:14px;overflow:hidden;position:relative}
 .map svg{display:block;width:100%;height:auto}
 .map path{stroke:var(--stroke);stroke-width:.4;transition:opacity .2s;cursor:pointer}
-.map path:hover,.map path.on{filter:brightness(.92)}
+.map path:hover{filter:brightness(.93)}.map path.on,.map path.on:hover{filter:brightness(.8) saturate(1.25) drop-shadow(0 0 2.5px rgba(0,0,0,.45))}
 .map.filt path:not(.hit){opacity:.18}
 .bn circle{fill:#fff;stroke:#1b1f27;stroke-width:1.2}
 .bn text{font:700 11px "Noto Sans SC",sans-serif;fill:var(--ink);paint-order:stroke;stroke:var(--bg);stroke-width:3px}
@@ -164,7 +164,7 @@ const mapEl=document.getElementById('map'),card=document.getElementById('card');
 const body=G.c.map((f,i)=>`<path data-i="${i}" tabindex="0" fill="${fill(f)}" d="${f.d}"><title>${f.n}</title></path>`).join('');
 mapEl.innerHTML='<svg viewBox="0 0 1000 520" role="img" aria-label="世界历法地图"><defs>'+pats.join('')+'</defs>'+body+`<g class="bn"><circle cx="${G.bn[0].toFixed(1)}" cy="${G.bn[1].toFixed(1)}" r="3.6"/><text x="${(G.bn[0]+6).toFixed(1)}" y="${(G.bn[1]+12).toFixed(1)}">傣历 1388</text></g></svg>`;
 const paths=[...mapEl.querySelectorAll('path')];
-const show=i=>{const f=G.c[i],x=info(f);paths.forEach(p=>p.classList.toggle('on',p.dataset.i==i));
+const show=i=>{const f=G.c[i],x=info(f);paths.forEach(p=>p.classList.toggle('on',p.dataset.i==i));const ap=paths.find(p=>p.dataset.i==i);if(ap)ap.parentNode.insertBefore(ap,ap.parentNode.querySelector('.bn'));
 card.innerHTML=`<h3>${f.n}</h3><div class="tags">${x.cs.map(c=>`<span class="tag"><i style="background:${col(c)}"></i>${CATS[c][0]}</span>`).join('')}</div><ul>${x.l.map(k=>`<li><b>${C[k][0]}<span>${C[k][1]}</span></b><small>${C[k][2]}</small></li>`).join('')}</ul>`+(f.id==='156'?'<p class="note">西双版纳的傣历：和缅历同源，傣历1388年，泼水节就是它的新年。</p>':'');};
 mapEl.addEventListener('click',e=>{const p=e.target.closest('path');if(p)show(p.dataset.i)});
 mapEl.addEventListener('mouseover',e=>{const p=e.target.closest('path');if(p&&matchMedia('(hover:hover)').matches)show(p.dataset.i)});
