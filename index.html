@@ -164,11 +164,13 @@ const mapEl=document.getElementById('map'),card=document.getElementById('card');
 const body=G.c.map((f,i)=>`<path data-i="${i}" tabindex="0" fill="${fill(f)}" d="${f.d}"><title>${f.n}</title></path>`).join('');
 mapEl.innerHTML='<svg viewBox="0 0 1000 520" role="img" aria-label="世界历法地图"><defs>'+pats.join('')+'</defs>'+body+`<g class="bn"><circle cx="${G.bn[0].toFixed(1)}" cy="${G.bn[1].toFixed(1)}" r="3.6"/><text x="${(G.bn[0]+6).toFixed(1)}" y="${(G.bn[1]+12).toFixed(1)}">傣历 1388</text></g></svg>`;
 const paths=[...mapEl.querySelectorAll('path')];
-const show=i=>{const f=G.c[i],x=info(f);paths.forEach(p=>p.classList.toggle('on',p.dataset.i==i));const ap=paths.find(p=>p.dataset.i==i);if(ap)ap.parentNode.insertBefore(ap,ap.parentNode.querySelector('.bn'));
+let cur=-1;const pick=i=>{cur=+i;paths.forEach(p=>p.classList.toggle('on',p.dataset.i==i));const ap=paths.find(p=>p.dataset.i==i);if(ap)ap.parentNode.insertBefore(ap,ap.parentNode.querySelector('.bn'));show(i)};
+const show=i=>{const f=G.c[i],x=info(f);
 card.innerHTML=`<h3>${f.n}</h3><div class="tags">${x.cs.map(c=>`<span class="tag"><i style="background:${col(c)}"></i>${CATS[c][0]}</span>`).join('')}</div><ul>${x.l.map(k=>`<li><b>${C[k][0]}<span>${C[k][1]}</span></b><small>${C[k][2]}</small></li>`).join('')}</ul>`+(f.id==='156'?'<p class="note">西双版纳的傣历：和缅历同源，傣历1388年，泼水节就是它的新年。</p>':'');};
-mapEl.addEventListener('click',e=>{const p=e.target.closest('path');if(p)show(p.dataset.i)});
+mapEl.addEventListener('click',e=>{const p=e.target.closest('path');if(p)pick(p.dataset.i)});
 mapEl.addEventListener('mouseover',e=>{const p=e.target.closest('path');if(p&&matchMedia('(hover:hover)').matches)show(p.dataset.i)});
-mapEl.addEventListener('keydown',e=>{const p=e.target.closest('path');if(p&&(e.key==='Enter'||e.key===' ')){e.preventDefault();show(p.dataset.i)}});
+mapEl.addEventListener('mouseleave',()=>{if(cur>=0)show(cur)});
+mapEl.addEventListener('keydown',e=>{const p=e.target.closest('path');if(p&&(e.key==='Enter'||e.key===' ')){e.preventDefault();pick(p.dataset.i)}});
 let sel=null;const lg=document.getElementById('legend');
 lg.innerHTML=Object.entries(CATS).map(([k,v])=>`<button class="chip" data-k="${k}" aria-pressed="false"><i style="background:${v[1]}"></i>${v[0]}</button>`).join('');
 lg.addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;sel=sel===b.dataset.k?null:b.dataset.k;
@@ -205,7 +207,7 @@ const T=[
 ['玛雅历','仪式循环','玛雅社区','仪式','—','maya'],
 ['ISO 周日期','基于公历','国际','日期与周编号标准','2026-W46','greg']];
 document.getElementById('tb').innerHTML=T.map(r=>`<tr><td data-l="历法"><span><span class="dot" style="background:${col(r[5])}"></span>${r[0]}</span></td><td data-l="类型">${r[1]}</td><td data-l="范围">${r[2]}</td><td data-l="用途">${r[3]}</td><td class="n" data-l="当前年份">${r[4]}</td></tr>`).join('');
-show(G.c.findIndex(f=>f.id==='156'));
+pick(G.c.findIndex(f=>f.id==='156'));
 }
 </script>
 </body>
